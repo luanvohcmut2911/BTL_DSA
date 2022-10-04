@@ -24,6 +24,11 @@ CharALNode* CharALNode::splitTail(int k){
     CharALNode *newNode = new CharALNode(this->CharArrayList.substr(0,this->CharArrayList.length()-k).c_str());
     return newNode;
 }
+CharALNode::~CharALNode(){
+    // CharArrayList = "";
+    // delete next;
+    // size = 0;
+}
 //Implementation of CSList
 ConcatStringList::ConcatStringList(const char *s){
     CharALNode *newNode = new CharALNode(s);
@@ -185,8 +190,11 @@ ConcatStringList ConcatStringList::reverse ()const{
     }
 }
 ConcatStringList::~ConcatStringList(){
-    refList.Remove(this->head);
-    refList.Remove(this->tail);
+    refList.Remove(this->head, this->tail);
+    // delStrList.Add(this->head, this->tail);
+    // delete head;
+    // delete tail;
+    // size = 0;
 }
 //Implement ConcatStringList::ReferenceList
 ConcatStringList::ReferencesList::ReferencesList(){
@@ -227,30 +235,27 @@ void ConcatStringList::ReferencesList::Insert(int data, CharALNode *node){
         temp->next = newNode;
     }
     else{
-        // cout<<"current refList: "<<endl;
-        // cout<<this->refCountsString()<<endl;
-        // cout<<"end"<<endl;  
-        RefNode* prevPtr = head->next;
-        cout<<"prevPtr: "<<prevPtr->data<<endl;
-        if(!prevPtr){
-            cout<<"NULL"<<endl;
-            head->next = newNode;
-        }
-        else if(!prevPtr->next){
-            prevPtr->next = newNode;
-        }
-        else{
-            while(prevPtr->next != NULL){
-                if(prevPtr->next->data >= data){
-                    newNode->next = prevPtr->next;
-                    prevPtr->next = newNode;
-                    break;
-                }
-                else{
-                    prevPtr = prevPtr -> next;
-                }
-            }
-        }
+        // RefNode* prevPtr = head->next;
+        // cout<<"prevPtr: "<<prevPtr->data<<endl;
+        // if(!prevPtr){
+        //     cout<<"NULL"<<endl;
+        //     head->next = newNode;
+        // }
+        // else if(!prevPtr->next){
+        //     prevPtr->next = newNode;
+        // }
+        // else{
+        //     while(prevPtr->next != NULL){
+        //         if(prevPtr->next->data >= data){
+        //             newNode->next = prevPtr->next;
+        //             prevPtr->next = newNode;
+        //             break;
+        //         }
+        //         else{
+        //             prevPtr = prevPtr -> next;
+        //         }
+        //     }
+        // }
         
     }
 }
@@ -267,7 +272,7 @@ int ConcatStringList::ReferencesList::refCountAt(int index)const {
 }
 std::string ConcatStringList::ReferencesList::refCountsString()const {
     string result = "RefCounts[";
-    RefNode *temp = this->head->next;
+    RefNode *temp = this->head->next;// using dummy node
     if(temp!=NULL){
         while(temp->next!=NULL){
             result+=to_string(temp->data);
@@ -288,19 +293,49 @@ void ConcatStringList::ReferencesList::removeNode(RefNode *node){
         prevPtr = prevPtr->next;
     }
     RefNode *nextNode = prevPtr->next->next;
-    delete prevPtr->next;
+    // delete prevPtr->next;
     prevPtr->next = nextNode;
+    // sizeRL--;
 }
-void ConcatStringList::ReferencesList::Remove(CharALNode *node){
+void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *nodeTail){\
+    RefNode *saveHead, *saveTail;
     RefNode *temp = head;
     while(temp!=NULL){
-        if(temp->node == node){
+        if(temp->node == nodeHead){
             temp->data--;
             //sort in increment, 0 in the end
             int count = temp->data;
             CharALNode *saveNode = temp->node;
+            saveHead = temp;
             if(count == 0){
                 this->removeNode(temp);
+                this->Insert(count, saveNode);
+            }
+            // else{
+                // this->removeNode(temp);
+                // this->Insert(count, saveNode);
+            // }
+            // //clear if head = 0
+            // //head->next : head (dummy node)
+            if(this->head->next->data==0){
+                head->next = NULL;
+                sizeRL = 0;
+            }
+            break;
+        }
+        temp = temp->next;
+    }
+    //for temp1
+    RefNode *temp1 = head;
+    while(temp1!=NULL){
+        if(temp1->node == nodeTail){
+            temp1->data--;
+            //sort in increment, 0 in the end
+            int count = temp1->data;
+            CharALNode *saveNode = temp1->node;
+            saveTail = temp1;
+            if(count == 0){
+                this->removeNode(temp1);
                 this->Insert(count, saveNode);
             }
             else{
@@ -308,15 +343,17 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *node){
                 // this->Insert(count, saveNode);
             }
             // //clear if head = 0
-            // //head->next : head
-            // if(this->head->next->data==0){
-            //     head->next = NULL;
-            //     sizeRL = 0;
-            // }
+            // //head->next : head (dummy node)
+            if(this->head->next->data==0){
+                head->next = NULL;
+                sizeRL = 0;
+            }
             break;
         }
-        temp = temp->next;
+        temp1 = temp1->next;
     }
+    // delStrList.traverseToClear();
+    delStrList.Add(saveHead, saveTail);
 }
 ConcatStringList::ReferencesList::~ReferencesList(){
     RefNode *temp = head;
@@ -336,9 +373,56 @@ int ConcatStringList::DeleteStringList::size()const {
     return this->sizeDL;
 }
 std::string ConcatStringList::DeleteStringList::totalRefCountsString()const {
-    string result = "TotalRefCounts[]";
+    string result = "TotalRefCounts[";
+    DeletedNode *temp = this->head;
+    int allCount = 0;
+    while(temp!=NULL){
+        if(temp->head->node == temp->tail->node){
+            allCount = temp->head->data;
+        }
+        else{
+            allCount = temp->head->data + temp->tail->data;
+        }
+        temp = temp->next;
+    }
+    if(allCount) result += to_string(allCount);
+    result += ']';
     return result;
 }
+void ConcatStringList::DeleteStringList::Add(RefNode *head, RefNode *tail){
+    DeletedNode *newNode = new DeletedNode (head,tail);
+    DeletedNode *temp = this->head;
+    if(temp!=NULL){
+        while(temp->next!=NULL){
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+    else{
+        this->head = newNode;
+    }
+    this->sizeDL++;
+    // traverseToClear();
+}
+void ConcatStringList::DeleteStringList::traverseToClear(){//uncompleted
+    cout<<"before check: "<<sizeDL<<endl;
+    // DeletedNode *run = this->head;
+    // while(run!=NULL){
+    //     if(run->head->data==0&&run->tail->data==0){
+    //         cout<<"decrease -1"<<endl;
+    //         sizeDL--;
+    //     }
+    //     run = run->next;
+    // }
+}
 ConcatStringList::DeleteStringList::~DeleteStringList(){
-
+    // DeletedNode *temp = head;
+}
+void ConcatStringList::DeleteStringList::print(){// for testing deleted String List
+    DeletedNode *temp = this->head;
+    while(temp!=NULL){
+        cout<<temp->head->data<<"   ";
+        cout<<temp->tail->data<<endl;
+        temp = temp->next;
+    }
 }

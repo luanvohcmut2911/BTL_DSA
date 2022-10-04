@@ -67,7 +67,7 @@ public:
             ReferencesList();
             void Add(CharALNode *node);// add a node to refList
             void Insert(int data, CharALNode *node);// insertion sort refNode
-            void Remove(CharALNode *node);
+            void Remove(CharALNode *node, CharALNode *node1);
             int size() const;
             int refCountAt(int index) const;
             void removeNode(RefNode *node);
@@ -76,18 +76,34 @@ public:
     };
     class DeletedNode{
     public: 
-
+        RefNode *head;
+        RefNode *tail;
+        DeletedNode *next;
+    public:
+        DeletedNode(RefNode *head = NULL, RefNode *tail = NULL){
+            this->head = head;
+            this->tail = tail;
+            this->next = NULL;
+        }
+        ~DeletedNode(){
+            delete head;
+            delete tail;
+            delete next;
+        }
     };
     class DeleteStringList {
         // TODO: may provide some attributes
         private:
-            CharALNode *head;
-            CharALNode *tail;
+            DeletedNode *head;
+            // DeletedNode *tail;
             int sizeDL;
         public:
             DeleteStringList();
             int size() const;
             std::string totalRefCountsString() const;
+            void Add(RefNode *head, RefNode *tail);
+            void traverseToClear();
+            void print();
             ~DeleteStringList();
     };
 };
