@@ -215,8 +215,8 @@ void ConcatStringList::ReferencesList::Add(CharALNode *node){
         temp->next = newNode;
         sizeRL++;
     }  
-
 }
+
 void ConcatStringList::ReferencesList::Insert(int data, CharALNode *node){
     RefNode *newNode = new RefNode(node,data,NULL);
     if(data == 0){
@@ -227,30 +227,30 @@ void ConcatStringList::ReferencesList::Insert(int data, CharALNode *node){
         temp->next = newNode;
     }
     else{
-        cout<<"current refList: "<<endl;
-        this->refCountsString();
-        cout<<"end"<<endl;
-        // RefNode* prevPtr = head->next;
-        // if(!prevPtr){
-        //     cout<<"NULL"<<endl;
-        //     head->next = newNode;
-        // }
-        // else if(!prevPtr->next){
-        //     prevPtr->next = newNode;
-        // }
-        // else{
-            
-        //     while(prevPtr->next != NULL){
-        //         if(prevPtr->next->data >= data){
-        //             newNode->next = prevPtr->next;
-        //             prevPtr->next = newNode;
-        //             break;
-        //         }
-        //         else{
-        //             prevPtr = prevPtr -> next;
-        //         }
-        //     }
-        // }
+        // cout<<"current refList: "<<endl;
+        // cout<<this->refCountsString()<<endl;
+        // cout<<"end"<<endl;  
+        RefNode* prevPtr = head->next;
+        cout<<"prevPtr: "<<prevPtr->data<<endl;
+        if(!prevPtr){
+            cout<<"NULL"<<endl;
+            head->next = newNode;
+        }
+        else if(!prevPtr->next){
+            prevPtr->next = newNode;
+        }
+        else{
+            while(prevPtr->next != NULL){
+                if(prevPtr->next->data >= data){
+                    newNode->next = prevPtr->next;
+                    prevPtr->next = newNode;
+                    break;
+                }
+                else{
+                    prevPtr = prevPtr -> next;
+                }
+            }
+        }
         
     }
 }
@@ -304,15 +304,15 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *node){
                 this->Insert(count, saveNode);
             }
             else{
-                this->Insert(count, saveNode);
                 // this->removeNode(temp);
+                // this->Insert(count, saveNode);
             }
-            //clear if head = 0
-            //head->next : head
-            if(this->head->next->data==0){
-                head->next = NULL;
-                sizeRL = 0;
-            }
+            // //clear if head = 0
+            // //head->next : head
+            // if(this->head->next->data==0){
+            //     head->next = NULL;
+            //     sizeRL = 0;
+            // }
             break;
         }
         temp = temp->next;
