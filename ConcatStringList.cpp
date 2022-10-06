@@ -50,8 +50,8 @@ ConcatStringList::ConcatStringList(const char *s){
     this->head = newNode;
     this->tail = head;
     this->size = string(s).length();
-    refList.Add(head);
-    refList.Add(tail);
+    refList.Add(head);// leak ?? sort ?
+    refList.Add(tail);// leak ?? sort ?
 
 }
 ConcatStringList::ConcatStringList(CharALNode *head, CharALNode *tail){
@@ -63,8 +63,8 @@ ConcatStringList::ConcatStringList(CharALNode *head, CharALNode *tail){
         this->size += temp->size;
         temp = temp->next;
     }
-    refList.Add(head);
-    refList.Add(tail);
+    refList.Add(head);// leak ?? sort ?
+    refList.Add(tail);// leak ?? sort ?
 }
 int ConcatStringList::length() const{
     return this->size;
@@ -199,7 +199,7 @@ ConcatStringList ConcatStringList::reverse ()const{
     }
 }
 ConcatStringList::~ConcatStringList(){
-    refList.Remove(this->head, this->tail);
+    refList.Remove(this->head, this->tail);//leak ??
                                             
 }
 //Implement ConcatStringList::ReferenceList
@@ -209,7 +209,6 @@ ConcatStringList::ReferencesList::ReferencesList(){
 }
 void ConcatStringList::ReferencesList::Add(CharALNode *node){
     RefNode *temp = head;
-    RefNode *newNode = new RefNode(node,1,NULL);//create new node;
     bool added = false;
     //added in the same node
     while(temp!=NULL){
@@ -223,6 +222,7 @@ void ConcatStringList::ReferencesList::Add(CharALNode *node){
     //added in another node --> always add in the head
     temp = head->next;// redeclare temp
     if(!added){
+        RefNode *newNode = new RefNode(node,1,NULL);//create new node;//leak??
         newNode->next = temp;
         head->next = newNode;
         sizeRL++;
@@ -247,8 +247,8 @@ int ConcatStringList::ReferencesList::refCountAt(int index)const {
         return arr[index];
     }
 }
-int* ConcatStringList::ReferencesList::checkAndSort(){
-    int *arr = new int[sizeRL];
+void ConcatStringList::ReferencesList::checkAndSort(){
+    this->arr = new int[sizeRL];//check leak  
     int index = 0;
     int endpoint = 0;
     RefNode *temp = this->head->next;// using dummy node
@@ -261,8 +261,6 @@ int* ConcatStringList::ReferencesList::checkAndSort(){
         }
         sortArray(arr,endpoint);
     }
-    this->arr = arr;
-    return arr;
 }
 std::string ConcatStringList::ReferencesList::refCountsString()const {// still ensure O(n)
     string result = "RefCounts[";
@@ -299,18 +297,17 @@ void ConcatStringList::ReferencesList::removeNode(RefNode *node){
     // sizeRL--;
 }
 void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *nodeTail){\
-    RefNode *saveHead, *saveTail;
+    RefNode *saveHead, *saveTail;// for saving to add to delStrList
     RefNode *temp = head;
     while(temp!=NULL){
         if(temp->node == nodeHead){
             temp->data--;
             //sort in increment, 0 in the end
             int count = temp->data;
-            CharALNode *saveNode = temp->node;
             saveHead = temp;
             if(count == 0){
-                this->removeNode(temp);
-                this->Insert(count, saveNode);
+                this->Insert(count, temp->node);
+                this->removeNode(temp);// delete temp
             }
             // //clear if head = 0
             // //head->next : head (dummy node)
@@ -325,11 +322,10 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
             temp1->data--;
             //sort in increment, 0 in the end
             int count = temp1->data;
-            CharALNode *saveNode = temp1->node;
             saveTail = temp1;
             if(count == 0){
+                this->Insert(count, temp1->node);
                 this->removeNode(temp1);
-                this->Insert(count, saveNode);
             }
             // //clear if head = 0
             // //head->next : head (dummy node)
@@ -337,16 +333,7 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
         }
         temp1 = temp1->next;
     }
-    // delStrList.traverseToClear();
     if(this->head->next->data==0){
-        // cout<<"start deleting..."<<endl;
-        // cout<<"info.."<<endl;
-        // RefNode *temp = head->next;
-        // while(temp!=NULL){
-        //     cout<<temp->node->CharArrayList<<endl;
-        //     temp = temp->next;
-        // }
-        // cout<<"end of info ..."<<endl;
         RefNode *temp = head->next;
         while (temp!=NULL){
             head->next = head->next->next;
@@ -356,7 +343,7 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
         head->next = NULL;
         sizeRL = 0;
     }
-    this->checkAndSort();
+    this->checkAndSort();// convert to array
     delStrList.Add(saveHead, saveTail);
 }
 ConcatStringList::ReferencesList::~ReferencesList(){
@@ -413,26 +400,9 @@ void ConcatStringList::DeleteStringList::traverseToClear(){//completed
     DeletedNode *run = this->head;
     while(run!=NULL){
         if(run->head->data==0&&run->tail->data==0){// delete node run
-            //run to find if node is in another Deleted node;
-            //1. Delete every node between head & tail
-            {
-                // CharALNode *temp = run->head->node;
-                // // if(temp==NULL) cout<<"temp: NULL"<<endl; 
-                // // else cout<<"temp: "<<temp->CharArrayList<<endl;
-                // if(temp!= run->tail->node){
-                //     temp = temp->next;
-                //     if(temp==NULL) cout<<"temp: NULL"<<endl; 
-                //     else cout<<"temp: "<<temp->CharArrayList<<endl;
-                //     while(temp->next!=NULL){
-                //         CharALNode *deleteNode = temp;
-                //         delete deleteNode; 
-                //         temp = temp->next;
-                //     } 
-                // }
-            }
             if(run==this->head){
                 this->head = this->head->next;
-                // delete run;
+                delete run;
                 run = this->head;
             }
             else{
@@ -444,7 +414,7 @@ void ConcatStringList::DeleteStringList::traverseToClear(){//completed
                 if(run->next == NULL) beforeRun->next = NULL;
                 else {
                     beforeRun->next = beforeRun->next->next;
-                    // delete run;
+                    delete run;
                     run = beforeRun->next;
                 }
                 run = run->next;

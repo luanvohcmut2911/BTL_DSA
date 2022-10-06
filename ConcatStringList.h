@@ -72,7 +72,7 @@ public:
             int size() const;
             int refCountAt(int index) const;
             void removeNode(RefNode *node);
-            int* checkAndSort();
+            void checkAndSort();
             std::string refCountsString() const;
             void print(){
                 RefNode *temp = this->head->next;
@@ -94,11 +94,7 @@ public:
             this->tail = tail;
             this->next = NULL;
         }
-        ~DeletedNode(){
-            delete head;
-            delete tail;
-            delete next;
-        }
+        ~DeletedNode(){}
     };
     class DeleteStringList {
         // TODO: may provide some attributes
