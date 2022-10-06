@@ -50,10 +50,9 @@ ConcatStringList::ConcatStringList(const char *s){
     this->head = newNode;
     this->tail = head;
     this->size = string(s).length();
-    if(s!=""){
-        refList.Add(head);
-        refList.Add(tail);
-    }
+    refList.Add(head);
+    refList.Add(tail);
+
 }
 ConcatStringList::ConcatStringList(CharALNode *head, CharALNode *tail){
     this->head = head;
@@ -201,6 +200,7 @@ ConcatStringList ConcatStringList::reverse ()const{
 }
 ConcatStringList::~ConcatStringList(){
     refList.Remove(this->head, this->tail);
+                                            
 }
 //Implement ConcatStringList::ReferenceList
 ConcatStringList::ReferencesList::ReferencesList(){
@@ -313,18 +313,18 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
             }
             // //clear if head = 0
             // //head->next : head (dummy node)
-            if(this->head->next->data==0){
-                //delete node 
-                RefNode *temp = head->next;
-                while(temp!=NULL){
-                    head->next = head->next->next;
-                    delete temp;
-                    temp = head->next;
-                }
-                //end delete node
-                head->next = NULL;
-                sizeRL = 0;
-            }
+            // if(this->head->next->data==0){
+            //     //delete node 
+            //     RefNode *temp = head->next;
+            //     while(temp!=NULL){
+            //         head->next = head->next->next;
+            //         delete temp;
+            //         temp = head->next;
+            //     }
+            //     //end delete node
+            //     head->next = NULL;
+            //     sizeRL = 0;
+            // }
             break;
         }
         temp = temp->next;
@@ -355,6 +355,23 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
     // delStrList.traverseToClear();
     this->checkAndSort();
     delStrList.Add(saveHead, saveTail);
+    // if(saveHead->data==0&&saveTail->data==0){
+    //     cout<<"info"<<endl;
+    //     cout<<saveHead->node->CharArrayList<<": "<<saveHead->data<<endl;
+    //     cout<<saveTail->node->CharArrayList<<": "<<saveTail->data<<endl;
+    //     cout<<"this should be deleted"<<endl;
+    //     CharALNode *temp = saveHead->node;
+    //     if(temp==saveTail->node){
+    //         delete temp;
+    //     }
+    //     else{
+    //         while(temp!=saveTail->node){
+    //             saveHead->node = saveHead->node->next;
+    //             delete temp;
+    //             temp = saveHead->node;
+    //         }
+    //     }
+    // }
 }
 ConcatStringList::ReferencesList::~ReferencesList(){
     RefNode *temp = head;
@@ -410,6 +427,27 @@ void ConcatStringList::DeleteStringList::traverseToClear(){//completed
     DeletedNode *run = this->head;
     while(run!=NULL){
         if(run->head->data==0&&run->tail->data==0){// delete node run
+            // cout<<"info"<<endl;
+            // cout<<run->head->node->CharArrayList<<": "<<run->head->data<<endl;
+            // cout<<run->tail->node->CharArrayList<<": "<<run->tail->data<<endl;
+            // cout<<"this should be deleted"<<endl;
+            //run to find if node is in another Deleted node;
+            //1. Delete every node between head & tail
+            {
+                // CharALNode *temp = run->head->node;
+                // // if(temp==NULL) cout<<"temp: NULL"<<endl; 
+                // // else cout<<"temp: "<<temp->CharArrayList<<endl;
+                // if(temp!= run->tail->node){
+                //     temp = temp->next;
+                //     if(temp==NULL) cout<<"temp: NULL"<<endl; 
+                //     else cout<<"temp: "<<temp->CharArrayList<<endl;
+                //     while(temp->next!=NULL){
+                //         CharALNode *deleteNode = temp;
+                //         delete deleteNode; 
+                //         temp = temp->next;
+                //     } 
+                // }
+            }
             if(run==this->head){
                 this->head = this->head->next;
                 // delete run;

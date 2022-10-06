@@ -47,7 +47,7 @@ public:
 public:
     class RefNode{// use for referenceList
     public: 
-        int data = 0;
+        int data;
         CharALNode *node;
         RefNode *next;
     public:
