@@ -74,6 +74,13 @@ public:
             void removeNode(RefNode *node);
             int* checkAndSort();
             std::string refCountsString() const;
+            void print(){
+                RefNode *temp = this->head->next;
+                while(temp!=NULL){
+                    cout<<temp->node->CharArrayList<<endl;
+                    temp = temp->next;
+                }
+            }
             ~ReferencesList();
     };
     class DeletedNode{

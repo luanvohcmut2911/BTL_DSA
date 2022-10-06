@@ -228,6 +228,7 @@ void ConcatStringList::ReferencesList::Add(CharALNode *node){
         sizeRL++;
     }  
     this->checkAndSort();
+    // this->print();
 }
 
 void ConcatStringList::ReferencesList::Insert(int data, CharALNode *node){
@@ -313,18 +314,6 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
             }
             // //clear if head = 0
             // //head->next : head (dummy node)
-            // if(this->head->next->data==0){
-            //     //delete node 
-            //     RefNode *temp = head->next;
-            //     while(temp!=NULL){
-            //         head->next = head->next->next;
-            //         delete temp;
-            //         temp = head->next;
-            //     }
-            //     //end delete node
-            //     head->next = NULL;
-            //     sizeRL = 0;
-            // }
             break;
         }
         temp = temp->next;
@@ -344,34 +333,31 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
             }
             // //clear if head = 0
             // //head->next : head (dummy node)
-            if(this->head->next->data==0){
-                head->next = NULL;
-                sizeRL = 0;
-            }
             break;
         }
         temp1 = temp1->next;
     }
     // delStrList.traverseToClear();
+    if(this->head->next->data==0){
+        // cout<<"start deleting..."<<endl;
+        // cout<<"info.."<<endl;
+        // RefNode *temp = head->next;
+        // while(temp!=NULL){
+        //     cout<<temp->node->CharArrayList<<endl;
+        //     temp = temp->next;
+        // }
+        // cout<<"end of info ..."<<endl;
+        RefNode *temp = head->next;
+        while (temp!=NULL){
+            head->next = head->next->next;
+            delete temp;
+            temp = head->next;
+        }
+        head->next = NULL;
+        sizeRL = 0;
+    }
     this->checkAndSort();
     delStrList.Add(saveHead, saveTail);
-    // if(saveHead->data==0&&saveTail->data==0){
-    //     cout<<"info"<<endl;
-    //     cout<<saveHead->node->CharArrayList<<": "<<saveHead->data<<endl;
-    //     cout<<saveTail->node->CharArrayList<<": "<<saveTail->data<<endl;
-    //     cout<<"this should be deleted"<<endl;
-    //     CharALNode *temp = saveHead->node;
-    //     if(temp==saveTail->node){
-    //         delete temp;
-    //     }
-    //     else{
-    //         while(temp!=saveTail->node){
-    //             saveHead->node = saveHead->node->next;
-    //             delete temp;
-    //             temp = saveHead->node;
-    //         }
-    //     }
-    // }
 }
 ConcatStringList::ReferencesList::~ReferencesList(){
     RefNode *temp = head;
@@ -427,10 +413,6 @@ void ConcatStringList::DeleteStringList::traverseToClear(){//completed
     DeletedNode *run = this->head;
     while(run!=NULL){
         if(run->head->data==0&&run->tail->data==0){// delete node run
-            // cout<<"info"<<endl;
-            // cout<<run->head->node->CharArrayList<<": "<<run->head->data<<endl;
-            // cout<<run->tail->node->CharArrayList<<": "<<run->tail->data<<endl;
-            // cout<<"this should be deleted"<<endl;
             //run to find if node is in another Deleted node;
             //1. Delete every node between head & tail
             {
