@@ -63,6 +63,7 @@ public:
         private:
             RefNode *head;
             int sizeRL;
+            int *arr;//for save node
         public:
             ReferencesList();
             void Add(CharALNode *node);// add a node to refList
@@ -71,6 +72,7 @@ public:
             int size() const;
             int refCountAt(int index) const;
             void removeNode(RefNode *node);
+            int* checkAndSort();
             std::string refCountsString() const;
             ~ReferencesList();
     };
