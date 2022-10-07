@@ -14,6 +14,7 @@ void swap(int *a, int *b){
     int *temp = a;
     a = b;
     b = temp;
+    delete temp;
 }
 void sortArray(int *arr, int size){
     //bubble sort
@@ -65,6 +66,7 @@ ConcatStringList::ConcatStringList(CharALNode *head, CharALNode *tail){
     }
     refList.Add(head);// leak ?? sort ?
     refList.Add(tail);// leak ?? sort ?
+    delete temp;
 }
 int ConcatStringList::length() const{
     return this->size;
@@ -84,6 +86,7 @@ char ConcatStringList::get(int index) const{
                 break;
             }
         }
+        delete temp;
         return result;
     }
     else{
@@ -113,8 +116,8 @@ std::string ConcatStringList::toString() const{
 }
 ConcatStringList ConcatStringList::concat(const ConcatStringList & otherS)const{
     this->tail->next = otherS.head;
-    ConcatStringList newNode = ConcatStringList(this->head,otherS.tail);
-    return newNode;
+    ConcatStringList *newNode = new ConcatStringList(this->head,otherS.tail);
+    return *newNode;
 }
 ConcatStringList ConcatStringList::subString (int from, int to)const{
     if(from>=to){
@@ -172,6 +175,8 @@ ConcatStringList ConcatStringList::subString (int from, int to)const{
             tail = head;
         }
         ConcatStringList *subStr = new ConcatStringList(head,tail);
+        // delete tempHead;
+        // delete tempTail;
         return *subStr;
     }
 }
@@ -195,17 +200,20 @@ ConcatStringList ConcatStringList::reverse ()const{
         CharALNode *tailCSList = new CharALNode(reverseStr(this->head->CharArrayList).c_str());
         runPtr->next = tailCSList;
         ConcatStringList *reverseCSList = new ConcatStringList(headCSList,tailCSList);
+        delete pivot;
+        // delete runPtr;
         return *reverseCSList;
     }
 }
 ConcatStringList::~ConcatStringList(){
     refList.Remove(this->head, this->tail);//leak ??
-                                            
+    // remove in refList                                     
 }
 //Implement ConcatStringList::ReferenceList
 ConcatStringList::ReferencesList::ReferencesList(){
     this->head = new RefNode();
     this->sizeRL = 0;
+    this->arr = NULL;
 }
 void ConcatStringList::ReferencesList::Add(CharALNode *node){
     RefNode *temp = head;
@@ -227,6 +235,7 @@ void ConcatStringList::ReferencesList::Add(CharALNode *node){
         head->next = newNode;
         sizeRL++;
     }  
+    // delete temp;
     this->checkAndSort();
     // this->print();
 }
@@ -248,6 +257,10 @@ int ConcatStringList::ReferencesList::refCountAt(int index)const {
     }
 }
 void ConcatStringList::ReferencesList::checkAndSort(){
+    if(arr!=NULL){
+        delete[] arr;
+        arr = NULL;
+    }
     this->arr = new int[sizeRL];//check leak  
     int index = 0;
     int endpoint = 0;
@@ -261,6 +274,7 @@ void ConcatStringList::ReferencesList::checkAndSort(){
         }
         sortArray(arr,endpoint);
     }
+    delete temp;
 }
 std::string ConcatStringList::ReferencesList::refCountsString()const {// still ensure O(n)
     string result = "RefCounts[";
@@ -345,6 +359,8 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
     }
     this->checkAndSort();// convert to array
     delStrList.Add(saveHead, saveTail);
+    // delete temp;
+    // delete temp1;
 }
 ConcatStringList::ReferencesList::~ReferencesList(){
     RefNode *temp = head;
@@ -379,6 +395,7 @@ std::string ConcatStringList::DeleteStringList::totalRefCountsString()const {
     }
     if(allCount) result += to_string(allCount);
     result += ']';
+    delete temp;
     return result;
 }
 void ConcatStringList::DeleteStringList::Add(RefNode *head, RefNode *tail){
@@ -394,6 +411,7 @@ void ConcatStringList::DeleteStringList::Add(RefNode *head, RefNode *tail){
         this->head = newNode;
     }
     this->sizeDL++;
+    // delete temp;
     traverseToClear();
 }
 void ConcatStringList::DeleteStringList::traverseToClear(){//completed
@@ -425,6 +443,7 @@ void ConcatStringList::DeleteStringList::traverseToClear(){//completed
             run = run->next;
         }
     }
+    delete run;
 }
 ConcatStringList::DeleteStringList::~DeleteStringList(){
     DeletedNode *temp = this->head;
