@@ -56,7 +56,11 @@ public:
             this->data = data;
             this->next = next;
         }
-        ~RefNode(){}
+        ~RefNode(){
+            delete node;
+            delete next;
+            data = 0;
+        }
     };
     class ReferencesList {
         // TODO: may provide some attributes

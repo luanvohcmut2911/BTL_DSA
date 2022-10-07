@@ -86,7 +86,7 @@ char ConcatStringList::get(int index) const{
                 break;
             }
         }
-        delete temp;
+        // delete temp;
         return result;
     }
     else{
@@ -278,15 +278,6 @@ void ConcatStringList::ReferencesList::checkAndSort(){
 }
 std::string ConcatStringList::ReferencesList::refCountsString()const {// still ensure O(n)
     string result = "RefCounts[";
-    // RefNode *temp = this->head->next;// using dummy node
-    // if(temp!=NULL){
-    //     while(temp->next!=NULL){
-    //         result+=to_string(temp->data);
-    //         result+=',';
-    //         temp = temp->next;
-    //     }
-    //     result+=to_string(temp->data);
-    // }
     if(sizeRL>0){
         for(int i=0;i<sizeRL-1;i++){
             result+=to_string(arr[i]);
@@ -347,11 +338,11 @@ void ConcatStringList::ReferencesList::Remove(CharALNode *nodeHead, CharALNode *
         }
         temp1 = temp1->next;
     }
-    if(this->head->next->data==0){
+    if(this->head->next->data==0){//???
         RefNode *temp = head->next;
         while (temp!=NULL){
             head->next = head->next->next;
-            delete temp;
+            // delete temp;
             temp = head->next;
         }
         head->next = NULL;
